@@ -1,0 +1,386 @@
+Joshua Adjei
+98082028
+Cohort C
+
+
+
+CREATE DATABASE workplace_db;
+
+
+7.24
+CREATE TABLE employee (empNo VARCHAR(10) NOT NULL PRIMARY KEY, fName VARCHAR(50) NOT NULL, lName VARCHAR(50) NOT NULL, address VARCHAR(100), DOB DATE, sex ENUM('M', 'F') DEFAULT 'M', position ENUM('Manager', 'Team Leader', 'Analyst', 'Software Developer') DEFAULT 'Manager', deptNo VARCHAR(10));
+Query OK, 0 rows affected (0.15 sec)
+
+DESCRIBE employee;
++----------+--------------------------------------------------------------+------+-----+---------+-------+
+| Field    | Type                                                         | Null | Key | Default | Extra |
++----------+--------------------------------------------------------------+------+-----+---------+-------+
+| empNo    | varchar(10)                                                  | NO   | PRI | NULL    |       |
+| fName    | varchar(50)                                                  | NO   |     | NULL    |       |
+| lName    | varchar(50)                                                  | NO   |     | NULL    |       |
+| address  | varchar(100)                                                 | YES  |     | NULL    |       |
+| DOB      | date                                                         | YES  |     | NULL    |       |
+| sex      | enum('M','F')                                                | YES  |     | M       |       |
+| position | enum('Manager','Team Leader','Analyst','Software Developer') | YES  |     | Manager |       |
+| deptNo   | varchar(10)                                                  | YES  |     | NULL    |       |
++----------+--------------------------------------------------------------+------+-----+---------+-------+
+8 rows in set (0.05 sec)
+
+
+CREATE TABLE department (deptNo VARCHAR(10) NOT NULL PRIMARY KEY, deptName VARCHAR(50) NOT NULL, mgrEmpNo VARCHAR(10), FOREIGN KEY (mgrEmpNo) REFERENCES employee(empNo));
+Query OK, 0 rows affected (0.09 sec)
+
+DESCRIBE department;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| deptNo   | varchar(10) | NO   | PRI | NULL    |       |
+| deptName | varchar(50) | NO   |     | NULL    |       |
+| mgrEmpNo | varchar(10) | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+
+CREATE TABLE project (projNo VARCHAR(10) NOT NULL PRIMARY KEY, projName VARCHAR(50) NOT NULL, deptNo VARCHAR(10) NOT NULL, FOREIGN KEY (deptNo) REFERENCES department(deptNo));
+Query OK, 0 rows affected (0.06 sec)
+
+DESCRIBE project;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| projNo   | varchar(10) | NO   | PRI | NULL    |       |
+| projName | varchar(50) | NO   |     | NULL    |       |
+| deptNo   | varchar(10) | NO   | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+
+CREATE TABLE works_on (empNo VARCHAR(10) NOT NULL, projNo VARCHAR(10) NOT NULL, dateWorked DATE NOT NULL, hoursWorked INT, CONSTRAINT Chk_hoursWorked CHECK (hoursWorked BETWEEN 0 AND 40), PRIMARY KEY (empNo, projNo, dateWorked), FOREIGN KEY (empNo) REFERENCES employee(empNo), FOREIGN KEY (projNo) REFERENCES project(projNo));
+Query OK, 0 rows affected (0.11 sec)
+
+DESCRIBE works_on;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| empNo       | varchar(10) | NO   | PRI | NULL    |       |
+| projNo      | varchar(10) | NO   | PRI | NULL    |       |
+| dateWorked  | date        | NO   | PRI | NULL    |       |
+| hoursWorked | int         | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+
+INSERT INTO employee (empNo, fName, lName, address, DOB, sex, position, deptNo)
+VALUES
+('EMP001','Kwame','Mensah','Accra, Ghana','1985-03-12','M','Manager','DEP001'),
+('EMP002','Ama','Owusu','Kumasi, Ghana','1990-07-21','F','Manager','DEP002'),
+('EMP003','Kofi','Asare','Takoradi, Ghana','1992-11-05','M','Analyst','DEP002'),
+('EMP004','Akosua','Boateng','Cape Coast, Ghana','1988-04-17','F','Manager','DEP001'),
+('EMP005','Yaw','Appiah','Tema, Ghana','1994-01-30','M','Software Developer','DEP001'),
+('EMP006','Adwoa','Frimpong','Sunyani, Ghana','1991-09-14','F','Manager','DEP006'),
+('EMP007','Kojo','Antwi','Tamale, Ghana','1987-06-02','M','Team Leader','DEP007'),
+('EMP008','Efua','Bonsu','Ho, Ghana','1993-12-09','F','Manager','DEP008'),
+('EMP009','Kwabena','Darko','Koforidua, Ghana','1986-08-25','M','Manager','DEP004'),
+('EMP010','Abena','Osei','Kasoa, Ghana','1995-02-18','F','Software Developer','DEP010');
+Query OK, 10 rows affected (0.02 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+SELECT * FROM employee;
++--------+---------+----------+-------------------+------------+------+--------------------+--------+
+| empNo  | fName   | lName    | address           | DOB        | sex  | position           | deptNo |
++--------+---------+----------+-------------------+------------+------+--------------------+--------+
+| EMP001 | Kwame   | Mensah   | Accra, Ghana      | 1985-03-12 | M    | Manager            | DEP001 |
+| EMP002 | Ama     | Owusu    | Kumasi, Ghana     | 1990-07-21 | F    | Manager            | DEP002 |
+| EMP003 | Kofi    | Asare    | Takoradi, Ghana   | 1992-11-05 | M    | Analyst            | DEP002 |
+| EMP004 | Akosua  | Boateng  | Cape Coast, Ghana | 1988-04-17 | F    | Manager            | DEP001 |
+| EMP005 | Yaw     | Appiah   | Tema, Ghana       | 1994-01-30 | M    | Software Developer | DEP001 |
+| EMP006 | Adwoa   | Frimpong | Sunyani, Ghana    | 1991-09-14 | F    | Manager            | DEP006 |
+| EMP007 | Kojo    | Antwi    | Tamale, Ghana     | 1987-06-02 | M    | Team Leader        | DEP007 |
+| EMP008 | Efua    | Bonsu    | Ho, Ghana         | 1993-12-09 | F    | Manager            | DEP008 |
+| EMP009 | Kwabena | Darko    | Koforidua, Ghana  | 1986-08-25 | M    | Manager            | DEP004 |
+| EMP010 | Abena   | Osei     | Kasoa, Ghana      | 1995-02-18 | F    | Software Developer | DEP010 |
++--------+---------+----------+-------------------+------------+------+--------------------+--------+
+10 rows in set (0.00 sec)
+
+
+INSERT INTO department (deptNo, deptName, mgrEmpNo)
+VALUES
+('DEP001','Software Development','EMP001'),
+('DEP002','Data Analytics','EMP002'),
+('DEP003','Human Resources','EMP003'),
+('DEP004','Finance','EMP009'),
+('DEP005','Operations','EMP005'),
+('DEP006','Research','EMP006'),
+('DEP007','Cyber Security','EMP007'),
+('DEP008','Marketing','EMP008'),
+('DEP009','Customer Support','EMP004'),
+('DEP010','Quality Assurance','EMP010');
+Query OK, 10 rows affected (0.04 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+SELECT * FROM department;
++--------+----------------------+----------+
+| deptNo | deptName             | mgrEmpNo |
++--------+----------------------+----------+
+| DEP001 | Software Development | EMP001   |
+| DEP002 | Data Analytics       | EMP002   |
+| DEP003 | Human Resources      | EMP003   |
+| DEP004 | Finance              | EMP009   |
+| DEP005 | Operations           | EMP005   |
+| DEP006 | Research             | EMP006   |
+| DEP007 | Cyber Security       | EMP007   |
+| DEP008 | Marketing            | EMP008   |
+| DEP009 | Customer Support     | EMP004   |
+| DEP010 | Quality Assurance    | EMP010   |
++--------+----------------------+----------+
+10 rows in set (0.00 sec)
+
+
+INSERT INTO project (projNo, projName, deptNo)
+VALUES
+('PRJ001','Bienvenitu Platform','DEP001'),
+('PRJ002','Student Portal Analytics','DEP002'),
+('PRJ003','Recruitment System','DEP003'),
+('PRJ004','Payroll Automation','DEP004'),
+('PRJ005','Inventory Tracker','DEP005'),
+('PRJ006','AI Research Hub','DEP006'),
+('PRJ007','Security Monitoring Tool','DEP007'),
+('PRJ008','Digital Marketing Campaign','DEP008'),
+('PRJ009','Customer Feedback System','DEP009'),
+('PRJ010','Software Testing Suite','DEP010');
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+SELECT * FROM project;
++--------+----------------------------+--------+
+| projNo | projName                   | deptNo |
++--------+----------------------------+--------+
+| PRJ001 | Bienvenitu Platform        | DEP001 |
+| PRJ002 | Student Portal Analytics   | DEP002 |
+| PRJ003 | Recruitment System         | DEP003 |
+| PRJ004 | Payroll Automation         | DEP004 |
+| PRJ005 | Inventory Tracker          | DEP005 |
+| PRJ006 | AI Research Hub            | DEP006 |
+| PRJ007 | Security Monitoring Tool   | DEP007 |
+| PRJ008 | Digital Marketing Campaign | DEP008 |
+| PRJ009 | Customer Feedback System   | DEP009 |
+| PRJ010 | Software Testing Suite     | DEP010 |
++--------+----------------------------+--------+
+10 rows in set (0.00 sec)
+
+
+INSERT INTO works_on (empNo, projNo, dateWorked, hoursWorked)
+VALUES
+('EMP001','PRJ001','2026-06-01',35),
+('EMP002','PRJ002','2026-06-02',30),
+('EMP003','PRJ002','2026-06-03',28),
+('EMP004','PRJ001','2026-06-04',40),
+('EMP005','PRJ005','2026-06-05',25),
+('EMP006','PRJ006','2026-06-06',32),
+('EMP007','PRJ007','2026-06-07',38),
+('EMP008','PRJ008','2026-06-08',27),
+('EMP009','PRJ004','2026-06-09',34),
+('EMP010','PRJ010','2026-06-10',36);
+Query OK, 10 rows affected (0.04 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+SELECT * FROM works_on;
++--------+--------+------------+-------------+
+| empNo  | projNo | dateWorked | hoursWorked |
++--------+--------+------------+-------------+
+| EMP001 | PRJ001 | 2026-06-01 |          35 |
+| EMP002 | PRJ002 | 2026-06-02 |          30 |
+| EMP003 | PRJ002 | 2026-06-03 |          28 |
+| EMP004 | PRJ001 | 2026-06-04 |          40 |
+| EMP005 | PRJ005 | 2026-06-05 |          25 |
+| EMP006 | PRJ006 | 2026-06-06 |          32 |
+| EMP007 | PRJ007 | 2026-06-07 |          38 |
+| EMP008 | PRJ008 | 2026-06-08 |          27 |
+| EMP009 | PRJ004 | 2026-06-09 |          34 |
+| EMP010 | PRJ010 | 2026-06-10 |          36 |
++--------+--------+------------+-------------+
+10 rows in set (0.00 sec)
+
+
+7.25
+CREATE VIEW female_manager_projects AS 
+SELECT
+    p.projNo,
+    p.projName,
+    d.deptNo,
+    d.deptName,
+    e.empNo AS managerNo,
+    e.fName,
+    e.lName
+FROM project p
+JOIN department d
+    ON p.deptNo = d.deptNo
+JOIN employee e
+    ON d.mgrEmpNo = e.empNo
+WHERE e.sex = 'F'
+AND e.position = 'Manager'
+ORDER BY p.projNo;
+Query OK, 0 rows affected (0.04 sec)
+
+SELECT * FROM female_manager_projects;
++--------+----------------------------+--------+------------------+-----------+--------+----------+
+| projNo | projName                   | deptNo | deptName         | managerNo | fName  | lName    |
++--------+----------------------------+--------+------------------+-----------+--------+----------+
+| PRJ002 | Student Portal Analytics   | DEP002 | Data Analytics   | EMP002    | Ama    | Owusu    |
+| PRJ006 | AI Research Hub            | DEP006 | Research         | EMP006    | Adwoa  | Frimpong |
+| PRJ008 | Digital Marketing Campaign | DEP008 | Marketing        | EMP008    | Efua   | Bonsu    |
+| PRJ009 | Customer Feedback System   | DEP009 | Customer Support | EMP004    | Akosua | Boateng  |
++--------+----------------------------+--------+------------------+-----------+--------+----------+
+4 rows in set (0.03 sec)
+
+
+7.26
+CREATE VIEW employee_projects AS
+SELECT
+	e.empNo,
+	e.fName,
+	e.lName,
+	p.projName,
+	w.hoursWorked
+FROM employee AS e
+JOIN works_on AS w
+	ON e.empNo = w.empNo
+JOIN project AS p
+	ON p.projNo = w.projNo;
+Query OK, 0 rows affected (0.02 sec)
+
+SELECT * FROM employee_projects;
++--------+---------+----------+----------------------------+-------------+
+| empNo  | fName   | lName    | projName                   | hoursWorked |
++--------+---------+----------+----------------------------+-------------+
+| EMP001 | Kwame   | Mensah   | Bienvenitu Platform        |          35 |
+| EMP002 | Ama     | Owusu    | Student Portal Analytics   |          30 |
+| EMP003 | Kofi    | Asare    | Student Portal Analytics   |          28 |
+| EMP004 | Akosua  | Boateng  | Bienvenitu Platform        |          40 |
+| EMP005 | Yaw     | Appiah   | Inventory Tracker          |          25 |
+| EMP006 | Adwoa   | Frimpong | AI Research Hub            |          32 |
+| EMP007 | Kojo    | Antwi    | Security Monitoring Tool   |          38 |
+| EMP008 | Efua    | Bonsu    | Digital Marketing Campaign |          27 |
+| EMP009 | Kwabena | Darko    | Payroll Automation         |          34 |
+| EMP010 | Abena   | Osei     | Software Testing Suite     |          36 |
++--------+---------+----------+----------------------------+-------------+
+10 rows in set (0.00 sec)
+
+
+7.27
+CREATE VIEW EmpProject(empNo, projNo, totalHours) AS
+SELECT 
+	w.empNo, 
+	w.projNo, 
+	SUM(hoursWorked) AS `totalHours`
+FROM 
+	employee e,
+	project p, 
+	works_on w 
+WHERE 
+	e.empNo = w.empNo 
+	AND p.projNo = w.projNo 
+GROUP BY 
+	w.empNo, 
+	w.projNo;
+Query OK, 0 rows affected (0.04 sec)
+
+a)
+SELECT * FROM EmpProject;
++--------+--------+------------+
+| empNo  | projNo | totalHours |
++--------+--------+------------+
+| EMP001 | PRJ001 |         35 |
+| EMP002 | PRJ002 |         30 |
+| EMP003 | PRJ002 |         28 |
+| EMP004 | PRJ001 |         40 |
+| EMP005 | PRJ005 |         25 |
+| EMP006 | PRJ006 |         32 |
+| EMP007 | PRJ007 |         38 |
+| EMP008 | PRJ008 |         27 |
+| EMP009 | PRJ004 |         34 |
+| EMP010 | PRJ010 |         36 |
++--------+--------+------------+
+10 rows in set (0.03 sec)
+
+
+b)
+SELECT projNo FROM EmpProject WHERE projNo = 'SCCS';
+Empty set (0.00 sec)
+
+c)
+SELECT COUNT(projNo) FROM EmpProject WHERE empNo = 'E1';
++---------------+
+| COUNT(projNo) |
++---------------+
+|             0 |
++---------------+
+1 row in set (0.03 sec)
+
+d)
+SELECT empNo, totalHours FROM EmpProject GROUP BY empNo;
++--------+------------+
+| empNo  | totalHours |
++--------+------------+
+| EMP001 |         35 |
+| EMP002 |         30 |
+| EMP003 |         28 |
+| EMP004 |         40 |
+| EMP005 |         25 |
+| EMP006 |         32 |
+| EMP007 |         38 |
+| EMP008 |         27 |
+| EMP009 |         34 |
+| EMP010 |         36 |
++--------+------------+
+10 rows in set (0.00 sec)
+
+
+General
+7.28
+CREATE TABLE part (partNo VARCHAR(5) NOT NULL, contract VARCHAR(50) NOT NULL, partCost INT NOT NULL, PRIMARY KEY (partNo, contract));
+Query OK, 0 rows affected (0.08 sec)
+
+INSERT INTO part (partNo, contract, partCost)
+VALUES
+('P001', 'Supply of Cement', 1200),
+('P002', 'Electrical Installation', 500),
+('P003', 'Road Construction', 12500),
+('P004', 'Plumbing Services', 800),
+('P005', 'Building Renovation', 9350),
+('P006', 'Furniture Supply', 600),
+('P007', 'Office Equipment', 6400),
+('P008', 'Network Installation', 2500),
+('P009', 'Painting Services', 3200),
+('P010', 'Air Conditioning Installation', 700);
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+SELECT * FROM part;
++--------+-------------------------------+----------+
+| partNo | contract                      | partCost |
++--------+-------------------------------+----------+
+| P001   | Supply of Cement              |     1200 |
+| P002   | Electrical Installation       |      500 |
+| P003   | Road Construction             |    12500 |
+| P004   | Plumbing Services             |      800 |
+| P005   | Building Renovation           |     9350 |
+| P006   | Furniture Supply              |      600 |
+| P007   | Office Equipment              |     6400 |
+| P008   | Network Installation          |     2500 |
+| P009   | Painting Services             |     3200 |
+| P010   | Air Conditioning Installation |      700 |
++--------+-------------------------------+----------+
+10 rows in set (0.00 sec)
+
+CREATE VIEW ExpensiveParts (partNo) AS SELECT DISTINCT partNo FROM part WHERE partCost > 1000;
+Query OK, 0 rows affected (0.03 sec)
+
+A materialized view physically stores the results of a query. The ExpensiveParts materialized view would store all part numbers with a partCost greater than 1000.
+The view is maintained by updating it whenever the Part table changes:
+
+Add a part when a new record with partCost > 1000 is inserted.
+Add or remove a part when an update causes its cost to cross the 1000 threshold.
+Remove a part when a qualifying record is deleted.
+
+The materialized view can be maintained without accessing the underlying Part table if the database uses incremental maintenance, where the inserted, updated, or deleted row values are available through transaction logs or triggers. Only the affected rows are processed, avoiding a full scan of the base table.
