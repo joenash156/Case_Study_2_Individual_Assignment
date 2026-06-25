@@ -376,6 +376,19 @@ SELECT * FROM part;
 CREATE VIEW ExpensiveParts (partNo) AS SELECT DISTINCT partNo FROM part WHERE partCost > 1000;
 Query OK, 0 rows affected (0.03 sec)
 
+SELECT * FROM ExpensiveParts;
++--------+
+| partNo |
++--------+
+| P001   |
+| P003   |
+| P005   |
+| P007   |
+| P008   |
+| P009   |
++--------+
+6 rows in set (0.04 sec)
+
 A materialized view physically stores the results of a query. The ExpensiveParts materialized view would store all part numbers with a partCost greater than 1000.
 The view is maintained by updating it whenever the Part table changes:
 
